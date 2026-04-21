@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRプロフェッショナル知識レベル診断 | NODIA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Screen -->
+        <section id="top-screen" class="screen active">
+            <div class="container">
+                <div class="logo-top"><img src="logo.png" alt="NODIA" class="win-logo"></div>
+                <div class="hero-wrap">
+                    <div class="bg-pattern"></div>
+                    <div class="hero-content">
+                        <h1 class="hero-title">
+                            人事としての<br>
+                            <span class="accent-text">現在地を知る。</span>
+                        </h1>
+                        <p class="hero-subtext">
+                            専門領域を多角的に分析し、<br>
+                            あなたの「人事段位」を可視化します。
+                        </p>
+                        <button id="start-btn" class="primary-btn">診断を開始する</button>
+                        
+                        <div class="top-info-footer">
+                            <div class="footer-item">
+                                <h4>Estimated Time</h4>
+                                <p>約15分</p>
+                            </div>
+                            <div class="footer-item">
+                                <h4>Total Questions</h4>
+                                <p>35問 / 7カテゴリ</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-visual">
+                        <div class="level-cards-stack">
+                            <div class="level-card-mini"><span class="level-num">L5</span> <span class="level-label">人事の達人</span></div>
+                            <div class="level-card-mini"><span class="level-num">L4</span> <span class="level-label">人事の匠</span></div>
+                            <div class="level-card-mini"><span class="level-num">L3</span> <span class="level-label">人事の道</span></div>
+                            <div class="level-card-mini"><span class="level-num">L2</span> <span class="level-label">人事の歩</span></div>
+                            <div class="level-card-mini"><span class="level-num">L1</span> <span class="level-label">人事の卵</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section id="quiz-screen" class="screen">
+            <div class="quiz-header-bar">
+                <div class="container">
+                    <div class="category-badge" id="current-category">カテゴリ名</div>
+                    <div class="q-count" id="progress-text">1 / 35</div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="q-progress-wrap">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-bar"></div>
+                    </div>
+                    <h2 class="question-text" id="question-text">ここに問題文が表示されます。</h2>
+                    <div class="choices-grid" id="choices-container">
+                        <!-- Choices injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lead Form Screen -->
+        <section id="form-screen" class="screen">
+            <div class="container">
+                <div class="content-wrapper">
+                    <h2>診断結果の集計が完了しました</h2>
+                    <p style="margin-bottom: 32px; color: #64748b;">結果を詳しく表示するために、以下の情報をご入力ください。</p>
+                    <form id="lead-form" class="modern-form">
+                        <div class="form-group-modern">
+                            <div class="flex-label">
+                                <label class="main-label">お名前</label>
+                                <span class="required-badge">必須</span>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-col">
+                                    <span class="sub-label">姓</span>
+                                    <input type="text" id="last-name" name="last-name" placeholder="例）田中" required>
+                                </div>
+                                <div class="input-col">
+                                    <span class="sub-label">名</span>
+                                    <input type="text" id="first-name" name="first-name" placeholder="例）太郎" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <div class="flex-label">
+                                <label class="main-label">所属企業名</label>
+                                <span class="required-badge">必須</span>
+                            </div>
+                            <input type="text" id="company" name="company" placeholder="例）株式会社NODIA" required>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <div class="flex-label">
+                                <label class="main-label">メールアドレス</label>
+                                <span class="required-badge">必須</span>
+                            </div>
+                            <input type="email" id="email" name="email" placeholder="例）hr@example.com" required>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <div class="flex-label">
+                                <label class="main-label">現在の職種</label>
+                                <span class="required-badge">必須</span>
+                            </div>
+                            <select id="job" name="job" required>
+                                <option value="" disabled selected>選択してください</option>
+                                <option value="採用担当">採用担当</option>
+                                <option value="労務担当">労務担当</option>
+                                <option value="組織開発">組織開発</option>
+                                <option value="HR事業者">HR事業者</option>
+                                <option value="その他">その他</option>
+                            </select>
+                        </div>
+
+                        <div class="agreement-section">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="privacy-agreement" required>
+                                <span class="checkmark"></span>
+                                <span class="agreement-text">
+                                    <a href="https://nodia.co.jp/privacy.html" target="_blank" class="policy-link">プライバシーポリシー</a>に同意する
+                                </span>
+                            </label>
+                        </div>
+                        <div class="submit-wrap">
+                            <button type="submit" class="primary-btn modern-submit">結果を判定する</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="screen">
+            <div class="container">
+                <div class="result-header-card" id="rank-banner">
+                    <div class="result-name-label"><span id="user-name-display">〇〇</span>さんの判定結果</div>
+                    <div class="result-rank-title" id="rank-title">人事の達人（L5）</div>
+                    <p id="rank-message">メッセージが表示されます。</p>
+                </div>
+
+                <div class="result-main-grid">
+                    <div class="score-box">
+                        <div class="score-num" id="correct-count">0</div>
+                        <div class="score-total">/ 35 正解</div>
+                        <div style="margin-top: 10px; font-weight: 700; color: var(--accent-color);">正答率 <span id="percent">0</span>%</div>
+                    </div>
+                    <div class="feedback-box">
+                        <p>あなたの最も高い専門性は「採用・面接スキル」にあります。一方で「AI活用」は今後の強化領域として期待されます。NODIAはあなたの挑戦をサポートします。</p>
+                    </div>
+                </div>
+
+                <div class="category-analysis">
+                    <h3 style="margin-bottom: 32px; font-weight: 900;">カテゴリ別分析</h3>
+                    <div id="category-charts-container">
+                        <!-- Charts injected here -->
+                    </div>
+                </div>
+
+                <div class="pro-analysis">
+                    <div class="analysis-card good">
+                        <h4>得意な領域</h4>
+                        <div id="strengths-list"></div>
+                    </div>
+                    <div class="analysis-card needs-work">
+                        <h4>強化推奨領域</h4>
+                        <div id="weaknesses-list"></div>
+                    </div>
+                </div>
+
+                <div class="explanation-list">
+                    <h3 style="margin-bottom: 24px; font-weight: 900;">正解・解説</h3>
+                    <div id="explanations-container">
+                        <!-- Explanations injected here -->
+                    </div>
+                </div>
+
+                <div class="cta-wrap">
+                    <a href="https://nodia.co.jp" class="link-btn-official" target="_blank">NODIA公式サイト ↗</a>
+                    <button id="share-btn" class="share-btn-x">Xでシェア</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
