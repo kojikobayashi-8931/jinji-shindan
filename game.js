@@ -6,7 +6,7 @@ class Game {
     constructor() {
         this.currentScreen = 'top-screen';
         this.currentQuestionIndex = 0;
-        this.totalQuestions = 35;
+        this.totalQuestions = quizData.reduce((acc, cat) => acc + cat.questions.length, 0);
         this.answers = []; 
         this.categoryScores = {};
         this.userData = {
@@ -31,7 +31,8 @@ class Game {
         // Buttons
         document.getElementById('start-btn').addEventListener('click', () => this.startQuiz());
         document.getElementById('lead-form').addEventListener('submit', (e) => this.handleFormSubmit(e));
-        document.getElementById('share-btn').addEventListener('click', () => this.handleXShare());
+        document.getElementById('share-btn-x').addEventListener('click', () => this.handleXShare());
+        document.getElementById('share-btn-fb').addEventListener('click', () => this.handleFBShare());
 
         // Initial Data Setup
         quizData.forEach(cat => {
@@ -229,6 +230,11 @@ class Game {
         const text = encodeURIComponent(`私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック #NODIA`);
         const url = encodeURIComponent(window.location.href);
         window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    }
+
+    handleFBShare() {
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
     }
 }
 

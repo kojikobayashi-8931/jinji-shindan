@@ -158,11 +158,18 @@
                 <div class="result-main-grid">
                     <div class="score-box">
                         <div class="score-num" id="correct-count">0</div>
-                        <div class="score-total">/ 35 正解</div>
+                        <div class="score-total">/ <span class="total-q-display">28</span> 正解</div>
                         <div style="margin-top: 10px; font-weight: 700; color: var(--accent-color);">正答率 <span id="percent">0</span>%</div>
                     </div>
                     <div class="feedback-box">
-                        <p>あなたの最も高い専門性は「採用・面接スキル」にあります。一方で「AI活用」は今後の強化領域として期待されます。NODIAはあなたの挑戦をサポートします。</p>
+                        <p id="rank-message-detail">あなたの最も高い専門性は「採用・面接スキル」にあります。一方で「AI活用」は今後の強化領域として期待されます。NODIAはあなたの挑戦をサポートします。</p>
+                    </div>
+                </div>
+
+                <div class="result-share-area">
+                    <div class="sns-buttons">
+                        <button id="share-btn-x" class="share-btn-x">X(Twitter)でシェア</button>
+                        <button id="share-btn-fb" class="share-btn-fb">Facebookでシェア</button>
                     </div>
                 </div>
 
@@ -193,7 +200,6 @@
 
                 <div class="cta-wrap">
                     <a href="https://nodia.co.jp" class="link-btn-official" target="_blank">NODIA公式サイト ↗</a>
-                    <button id="share-btn" class="share-btn-x">Xでシェア</button>
                 </div>
             </div>
         </section>
