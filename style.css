@@ -270,6 +270,7 @@ h1.hero-title .accent-text {
     color: var(--main-color);
     margin-bottom: 48px;
     line-height: 1.4;
+    min-height: 120px; /* Fix vertical position of choice A */
 }
 
 .choices-grid {
@@ -655,7 +656,21 @@ h1.hero-title .accent-text {
     .hero-subtext { font-size: 0.95rem; margin-bottom: 30px; }
     .level-card-mini { padding: 12px; max-width: 260px; font-size: 0.85rem; }
     
-    .logo-top { margin-bottom: 30px; }
+    .top-info-footer { 
+        margin-top: 40px; 
+        margin-bottom: 40px; 
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .hero-wrap { flex-direction: column; }
+    .hero-content { order: 1; }
+    .hero-visual { 
+        order: 2; 
+        margin-top: 40px;
+    }
+    
+    .logo-top { margin-bottom: 30px; text-align: center; }
     .win-logo { height: 36px; }
 
     /* Quiz Screen Optimization to prevent scrolling */
@@ -667,6 +682,7 @@ h1.hero-title .accent-text {
         font-size: 1.15rem; 
         margin-bottom: 24px; 
         line-height: 1.4;
+        min-height: 80px; /* Mobile-specific fixed start for choices */
     }
     
     .choices-grid { gap: 10px; }
