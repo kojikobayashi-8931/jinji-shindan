@@ -712,14 +712,53 @@ h1.hero-title .accent-text {
     .choice-option { padding: 14px 18px; font-size: 0.9rem; }
     .choice-indicator { width: 30px; height: 30px; margin-right: 12px; font-size: 0.8rem; }
 
-    /* Result Screen Mobile */
+    /* Lead Form Fixes */
+    .custom-checkbox {
+        white-space: normal; 
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .agreement-text {
+        display: block;
+        margin-top: 8px;
+    }
+
+    /* Result Screen Fixes */
+    .result-main-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .feedback-box {
+        padding: 24px;
+        font-size: 1rem;
+    }
+    
+    .pro-analysis {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .exp-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .exp-tag {
+        width: fit-content;
+        white-space: nowrap;
+    }
+
+    /* Rest of existing mobile styles */
     .result-rank-title { font-size: 2rem; }
     .result-header-card { padding: 40px 20px; }
     .score-num { font-size: 2.5rem; }
     .score-box { padding: 20px; }
     .category-analysis { padding: 24px; }
     
-    .cta-wrap { flex-direction: column; align-items: stretch; }
+    .cta-wrap { flex-direction: column; align-items: stretch; margin-top: 30px; }
     .sns-buttons { flex-direction: column; }
     .share-btn-x, .share-btn-fb, .link-btn-official { width: 100%; text-align: center; }
 }
