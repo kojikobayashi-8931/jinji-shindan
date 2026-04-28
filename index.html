@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>HRプロフェッショナル知識レベル診断 | NODIA</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,6 +153,7 @@
         <section id="result-screen" class="screen">
             <div class="container">
                 <div class="result-header-card" id="rank-banner">
+                    <div class="rank-icon-wrap"><span id="rank-icon">👑</span></div>
                     <div class="result-name-label"><span id="user-name-display">〇〇</span>さんの判定結果</div>
                     <div class="result-rank-title" id="rank-title">人事の達人（L5）</div>
                     <p id="rank-message">メッセージが表示されます。</p>
@@ -170,6 +174,7 @@
                     <div class="sns-buttons">
                         <button id="share-btn-x" class="share-btn-x">X(Twitter)でシェア</button>
                         <button id="share-btn-fb" class="share-btn-fb">Facebookでシェア</button>
+                        <button id="copy-btn" class="copy-btn">結果をコピー</button>
                     </div>
                 </div>
 
@@ -200,11 +205,13 @@
 
                 <div class="cta-wrap">
                     <a href="https://nodia.co.jp" class="link-btn-official" target="_blank">NODIA公式サイト ↗</a>
+                    <button id="retry-btn" class="retry-btn">もう一度テストする</button>
                 </div>
             </div>
         </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="data.js"></script>
     <script src="game.js"></script>
 </body>

@@ -33,6 +33,8 @@ class Game {
         document.getElementById('lead-form').addEventListener('submit', (e) => this.handleFormSubmit(e));
         document.getElementById('share-btn-x').addEventListener('click', () => this.handleXShare());
         document.getElementById('share-btn-fb').addEventListener('click', () => this.handleFBShare());
+        document.getElementById('copy-btn').addEventListener('click', () => this.handleCopyResult());
+        document.getElementById('retry-btn').addEventListener('click', () => this.handleRetry());
 
         // Initial Data Setup
         quizData.forEach(cat => {
@@ -134,9 +136,29 @@ class Game {
         const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
 
         // Update UI
+        const rankColors = {
+            'L5': '#818cf8',
+            'L4': '#60a5fa',
+            'L3': '#34d399',
+            'L2': '#fbbf24',
+            'L1': '#9ca3af'
+        };
+        const banner = document.getElementById('rank-banner');
+        banner.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
+        
+        const rankIcons = {
+            'L5': '👑',
+            'L4': '💎',
+            'L3': '🏅',
+            'L2': '⭐',
+            'L1': '🌱'
+        };
+        document.getElementById('rank-icon').textContent = rankIcons[rankInfo.rank] || '🏅';
+        
         document.getElementById('user-name-display').textContent = this.userData.name;
         document.getElementById('rank-title').textContent = `${rankInfo.title}（${rankInfo.rank}）`;
         document.getElementById('correct-count').textContent = totalCorrect;
+        document.querySelector('.total-q-display').textContent = this.totalQuestions;
         document.getElementById('percent').textContent = percent;
         document.getElementById('rank-message').textContent = rankInfo.message;
 
@@ -190,6 +212,18 @@ class Game {
 
         document.getElementById('strengths-list').innerHTML = `<ul>${strengths.map(s => `<li>${s}</li>`).join('') || '<li>なし</li>'}</ul>`;
         document.getElementById('weaknesses-list').innerHTML = `<ul>${weaknesses.map(w => `<li>${w}</li>`).join('') || '<li>なし</li>'}</ul>`;
+
+        let feedbackText = "";
+        if (strengths.length > 0) {
+            feedbackText += `あなたの最も高い専門性は「${strengths[0]}」等にあります。`;
+        }
+        if (weaknesses.length > 0) {
+            feedbackText += `一方で「${weaknesses[0]}」等は今後の強化領域として期待されます。`;
+        }
+        if (strengths.length === 0 && weaknesses.length === 0) {
+            feedbackText = "各領域のバランスが取れています。更なる専門性の追求が期待されます。";
+        }
+        document.getElementById('rank-message-detail').textContent = feedbackText;
     }
 
     renderExplanations() {
@@ -222,19 +256,89 @@ class Game {
         });
     }
 
-    handleXShare() {
+    async handleXShare() {
         const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
         const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
         const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
+        const text = `私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック`;
+        const url = window.location.href;
 
-        const text = encodeURIComponent(`私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック #NODIA`);
-        const url = encodeURIComponent(window.location.href);
-        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        try {
+            const banner = document.getElementById('rank-banner');
+            const canvas = await html2canvas(banner, { scale: 2 });
+            const dataUrl = canvas.toDataURL('image/png');
+
+            if (navigator.share && navigator.canShare) {
+                const blob = await (await fetch(dataUrl)).blob();
+                const file = new File([blob], 'nodia_hr_rank.png', { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: '人事段位チェック',
+                        text: text,
+                        url: url,
+                        files: [file]
+                    });
+                    return;
+                }
+            }
+
+            // Fallback for Desktop: Download image and open intent
+            const link = document.createElement('a');
+            link.download = 'nodia_hr_rank.png';
+            link.href = dataUrl;
+            link.click();
+
+            setTimeout(() => {
+                const intentText = encodeURIComponent(`${text}\n※ダウンロードされた画像を添付してシェアしてください！`);
+                window.open(`https://twitter.com/intent/tweet?text=${intentText}&url=${encodeURIComponent(url)}`, '_blank');
+            }, 500);
+
+        } catch (error) {
+            console.error('Error generating image for share', error);
+            const fallbackText = encodeURIComponent(text);
+            window.open(`https://twitter.com/intent/tweet?text=${fallbackText}&url=${encodeURIComponent(url)}`, '_blank');
+        }
     }
 
     handleFBShare() {
-        const url = encodeURIComponent(window.location.href);
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        const url = window.location.href;
+        if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
+            navigator.share({
+                title: '人事段位チェック',
+                url: url
+            }).catch(console.error);
+        } else {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        }
+    }
+
+    handleCopyResult() {
+        const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
+        const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
+        const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
+        const feedback = document.getElementById('rank-message-detail').textContent;
+        
+        const textToCopy = `【人事段位チェック結果】\n段位: ${rankInfo.title} (${rankInfo.rank})\n正答率: ${percent}%\n\n${feedback}\n\n#人事段位チェック\n${window.location.href}`;
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert('結果をクリップボードにコピーしました！');
+        }).catch(err => {
+            console.error('Copy failed', err);
+            alert('コピーに失敗しました。');
+        });
+    }
+
+    handleRetry() {
+        this.currentQuestionIndex = 0;
+        this.answers = [];
+        this.userData = { company: '', name: '', email: '', job: '' };
+        for (let cat in this.categoryScores) {
+            this.categoryScores[cat].correct = 0;
+        }
+        document.getElementById('lead-form').reset();
+        document.getElementById('privacy-agreement').checked = false;
+        
+        this.showScreen('top-screen');
     }
 }
 
