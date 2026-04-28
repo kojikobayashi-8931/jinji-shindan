@@ -183,13 +183,13 @@ class Game {
         banner.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
         
         const rankImages = {
-            'L5': 'img/char_l5.png',
-            'L4': 'img/char_l4.png',
-            'L3': 'img/char_l3.png',
-            'L2': 'img/char_l2.png',
-            'L1': 'img/char_l1.png'
+            'L5': 'img/char_l5.svg',
+            'L4': 'img/char_l4.svg',
+            'L3': 'img/char_l3.svg',
+            'L2': 'img/char_l2.svg',
+            'L1': 'img/char_l1.svg'
         };
-        document.getElementById('rank-icon').src = rankImages[rankInfo.rank] || 'img/char_l3.png';
+        document.getElementById('rank-icon').src = rankImages[rankInfo.rank] || 'img/char_l3.svg';
         
         document.getElementById('user-name-display').textContent = this.userData.name;
         document.getElementById('rank-title').textContent = `${rankInfo.title}（${rankInfo.rank}）`;
@@ -250,14 +250,17 @@ class Game {
         document.getElementById('weaknesses-list').innerHTML = `<ul>${weaknesses.map(w => `<li>${w}</li>`).join('') || '<li>なし</li>'}</ul>`;
 
         let feedbackText = "";
+        
         if (strengths.length > 0) {
-            feedbackText += `あなたの最も高い専門性は「${strengths[0]}」等にあります。`;
+            feedbackText += `【強みについて】\nあなたの現在の専門性において、特に強みとして発揮されているのは「${strengths.join('」「')}」の領域です。この分野での深い理解と知識は、日々の人事課題の解決に直結し、組織全体のパフォーマンス向上に大きく貢献していると考えられます。今後はこの強みをさらに磨き上げ、社内での勉強会や他部署へのアドバイスなどを通じて周囲に還元していくことで、専門家としての確固たる地位を築くことができるでしょう。\n\n`;
+        } else {
+            feedbackText += `【現状の総評】\n全体的にまんべんなく基礎知識を吸収している段階にあるようです。特定の領域に大きく偏ることなく、幅広い人事スキルを身につけようとする姿勢は、将来の成長において非常に重要です。まずは現在の業務に最も関連の深い分野を一つ選び、そこから深掘りしていくことで、実践的な強みへと昇華させていくことをお勧めします。\n\n`;
         }
+
         if (weaknesses.length > 0) {
-            feedbackText += `一方で「${weaknesses[0]}」等は今後の強化領域として期待されます。`;
-        }
-        if (strengths.length === 0 && weaknesses.length === 0) {
-            feedbackText = "各領域のバランスが取れています。更なる専門性の追求が期待されます。";
+            feedbackText += `【今後の課題・強化領域】\n一方で、今後のさらなるステップアップに向けた強化推奨領域として「${weaknesses.join('」「')}」が挙げられます。これらの領域は、法律の頻繁なアップデートや労働市場のトレンド変化が激しいため、意識的かつ継続的な学習時間の確保が求められます。この分野の知識を補強することで、人事としての対応力が飛躍的に向上し、より複雑で高度な経営課題や組織のトラブルに対しても、自信を持って迅速かつ適切なアプローチができるようになります。`;
+        } else {
+            feedbackText += `【今後の課題・強化領域】\n特筆すべき弱点は見当たらず、非常に高いレベルでバランスの取れた知識をお持ちです。今後は、既存の知識をさらにアップデートし続けるだけでなく、経営戦略と人事戦略を連動させるような、より上位レイヤーの課題に取り組むことをお勧めします。知識を「知っている」状態から、組織を変革するために「使いこなす」状態へと発展させることが次のステップです。`;
         }
         document.getElementById('rank-message-detail').textContent = feedbackText;
     }
