@@ -306,8 +306,9 @@ class Game {
         const shareDiv = document.createElement('div');
         shareDiv.style.position = 'absolute';
         shareDiv.style.left = '-9999px';
-        shareDiv.style.width = '600px';
-        shareDiv.style.height = '315px';
+        // OGP標準サイズ(1200x630)に設定し、SNSでのクロップを防ぐための余白を設ける
+        shareDiv.style.width = '1200px';
+        shareDiv.style.height = '630px';
         
         const rankColors = {
             'L5': '#818cf8',
@@ -322,7 +323,8 @@ class Game {
         shareDiv.style.alignItems = 'center';
         shareDiv.style.justifyContent = 'center';
         shareDiv.style.fontFamily = "'Inter', 'Noto Sans JP', sans-serif";
-        shareDiv.style.padding = '40px';
+        // 余白を広めにとる
+        shareDiv.style.padding = '80px';
         shareDiv.style.boxSizing = 'border-box';
         
         const rankImages = {
@@ -335,24 +337,23 @@ class Game {
         const imgSrc = rankImages[rankInfo.rank] || 'img2/lv3_path.svg';
 
         shareDiv.innerHTML = `
-            <div style="flex: 1; text-align: center; border-right: 2px solid rgba(255,255,255,0.3); padding-right: 20px;">
-                <img src="${imgSrc}" style="width: 140px; height: 140px; object-fit: contain; margin-bottom: 10px;">
-                <div style="font-size: 26px; font-weight: bold;">${rankInfo.title} (${rankInfo.rank})</div>
+            <div style="flex: 1; text-align: center; border-right: 4px solid rgba(255,255,255,0.3); padding-right: 40px;">
+                <img src="${imgSrc}" style="width: 250px; height: 250px; object-fit: contain; margin-bottom: 20px;">
+                <div style="font-size: 50px; font-weight: bold;">${rankInfo.title} (${rankInfo.rank})</div>
             </div>
-            <div style="flex: 1; text-align: center; padding-left: 20px;">
-                <div style="font-size: 22px; margin-bottom: 10px; opacity: 0.9;">正答率</div>
-                <div style="font-size: 80px; font-weight: 900; line-height: 1;">${percent}<span style="font-size: 40px;">%</span></div>
+            <div style="flex: 1; text-align: center; padding-left: 40px;">
+                <div style="font-size: 40px; margin-bottom: 20px; opacity: 0.9;">正答率</div>
+                <div style="font-size: 160px; font-weight: 900; line-height: 1;">${percent}<span style="font-size: 80px;">%</span></div>
             </div>
         `;
         document.body.appendChild(shareDiv);
 
-        const canvas = await html2canvas(shareDiv, { scale: 2, backgroundColor: null });
+        // scale: 1で正確に1200x630を出力
+        const canvas = await html2canvas(shareDiv, { scale: 1, backgroundColor: null });
         document.body.removeChild(shareDiv);
         const dataUrl = canvas.toDataURL('image/png');
-        const blob = await (await fetch(dataUrl)).blob();
-        const file = new File([blob], 'nodia_hr_rank.png', { type: 'image/png' });
 
-        return { dataUrl, file };
+        return { dataUrl };
     }
 
     async handleUniversalShare(platform) {
@@ -360,24 +361,12 @@ class Game {
         const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
         const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
         const text = `私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック`;
-        // FBシェアでのエラー防止のため、クリーンなURLを明示
         const shareUrl = "https://kojikobayashi-8931.github.io/jinji-shindan/";
 
         try {
-            const { dataUrl, file } = await this.generateShareImage();
+            const { dataUrl } = await this.generateShareImage();
 
-            // モバイルの場合はNative Share APIで画像付きシェアを試行
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    title: '人事段位チェック',
-                    text: text,
-                    url: shareUrl,
-                    files: [file]
-                });
-                return;
-            }
-
-            // デスクトップ等のFallback: 画像をダウンロードさせて各SNSを開く
+            // 画像をダウンロードさせて各SNSのダイレクトアプリ/ウィンドウを開く
             const link = document.createElement('a');
             link.download = 'nodia_hr_rank.png';
             link.href = dataUrl;
