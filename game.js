@@ -138,6 +138,7 @@ class Game {
         
         if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
             console.warn('Google Apps Script URL is not set. Skipping data submission.');
+            alert('【開発者向け】GASのURLが設定されていません。game.jsの137行目を変更してください。');
             return;
         }
 
@@ -157,8 +158,10 @@ class Game {
         try {
             await fetch(GAS_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 body: params
             });
+            console.log('GASへデータを送信しました');
         } catch (error) {
             console.error('Error submitting data to GAS:', error);
         }
@@ -295,110 +298,125 @@ class Game {
         });
     }
 
-    async handleXShare() {
+    async generateShareImage() {
+        const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
+        const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
+        const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
+
+        const shareDiv = document.createElement('div');
+        shareDiv.style.position = 'absolute';
+        shareDiv.style.left = '-9999px';
+        shareDiv.style.width = '600px';
+        shareDiv.style.height = '315px';
+        
+        const rankColors = {
+            'L5': '#818cf8',
+            'L4': '#60a5fa',
+            'L3': '#34d399',
+            'L2': '#fbbf24',
+            'L1': '#9ca3af'
+        };
+        shareDiv.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
+        shareDiv.style.color = '#fff';
+        shareDiv.style.display = 'flex';
+        shareDiv.style.alignItems = 'center';
+        shareDiv.style.justifyContent = 'center';
+        shareDiv.style.fontFamily = "'Inter', 'Noto Sans JP', sans-serif";
+        shareDiv.style.padding = '40px';
+        shareDiv.style.boxSizing = 'border-box';
+        
+        const rankImages = {
+            'L5': 'img2/lv5_grandmaster.svg',
+            'L4': 'img2/lv4_master.svg',
+            'L3': 'img2/lv3_path.svg',
+            'L2': 'img2/lv2_step.svg',
+            'L1': 'img2/lv1_egg.svg'
+        };
+        const imgSrc = rankImages[rankInfo.rank] || 'img2/lv3_path.svg';
+
+        shareDiv.innerHTML = `
+            <div style="flex: 1; text-align: center; border-right: 2px solid rgba(255,255,255,0.3); padding-right: 20px;">
+                <img src="${imgSrc}" style="width: 140px; height: 140px; object-fit: contain; margin-bottom: 10px;">
+                <div style="font-size: 26px; font-weight: bold;">${rankInfo.title} (${rankInfo.rank})</div>
+            </div>
+            <div style="flex: 1; text-align: center; padding-left: 20px;">
+                <div style="font-size: 22px; margin-bottom: 10px; opacity: 0.9;">正答率</div>
+                <div style="font-size: 80px; font-weight: 900; line-height: 1;">${percent}<span style="font-size: 40px;">%</span></div>
+            </div>
+        `;
+        document.body.appendChild(shareDiv);
+
+        const canvas = await html2canvas(shareDiv, { scale: 2, backgroundColor: null });
+        document.body.removeChild(shareDiv);
+        const dataUrl = canvas.toDataURL('image/png');
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], 'nodia_hr_rank.png', { type: 'image/png' });
+
+        return { dataUrl, file };
+    }
+
+    async handleUniversalShare(platform) {
         const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
         const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
         const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
         const text = `私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック`;
-        const shareUrl = window.location.origin + window.location.pathname;
+        // FBシェアでのエラー防止のため、クリーンなURLを明示
+        const shareUrl = "https://kojikobayashi-8931.github.io/jinji-shindan/";
 
         try {
-            // 動的にシェア専用の画像レイアウトを生成
-            const shareDiv = document.createElement('div');
-            shareDiv.style.position = 'absolute';
-            shareDiv.style.left = '-9999px';
-            shareDiv.style.width = '600px';
-            shareDiv.style.height = '315px';
-            
-            const rankColors = {
-                'L5': '#818cf8',
-                'L4': '#60a5fa',
-                'L3': '#34d399',
-                'L2': '#fbbf24',
-                'L1': '#9ca3af'
-            };
-            shareDiv.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
-            shareDiv.style.color = '#fff';
-            shareDiv.style.display = 'flex';
-            shareDiv.style.alignItems = 'center';
-            shareDiv.style.justifyContent = 'center';
-            shareDiv.style.fontFamily = "'Inter', 'Noto Sans JP', sans-serif";
-            shareDiv.style.padding = '40px';
-            shareDiv.style.boxSizing = 'border-box';
-            
-            const rankImages = {
-                'L5': 'img2/lv5_grandmaster.svg',
-                'L4': 'img2/lv4_master.svg',
-                'L3': 'img2/lv3_path.svg',
-                'L2': 'img2/lv2_step.svg',
-                'L1': 'img2/lv1_egg.svg'
-            };
-            const imgSrc = rankImages[rankInfo.rank] || 'img2/lv3_path.svg';
+            const { dataUrl, file } = await this.generateShareImage();
 
-            shareDiv.innerHTML = `
-                <div style="flex: 1; text-align: center; border-right: 2px solid rgba(255,255,255,0.3); padding-right: 20px;">
-                    <img src="${imgSrc}" style="width: 140px; height: 140px; object-fit: contain; margin-bottom: 10px;">
-                    <div style="font-size: 26px; font-weight: bold;">${rankInfo.title} (${rankInfo.rank})</div>
-                </div>
-                <div style="flex: 1; text-align: center; padding-left: 20px;">
-                    <div style="font-size: 22px; margin-bottom: 10px; opacity: 0.9;">正答率</div>
-                    <div style="font-size: 80px; font-weight: 900; line-height: 1;">${percent}<span style="font-size: 40px;">%</span></div>
-                </div>
-            `;
-            document.body.appendChild(shareDiv);
-
-            const canvas = await html2canvas(shareDiv, { scale: 2, backgroundColor: null });
-            document.body.removeChild(shareDiv);
-            const dataUrl = canvas.toDataURL('image/png');
-
-            if (navigator.share && navigator.canShare) {
-                const blob = await (await fetch(dataUrl)).blob();
-                const file = new File([blob], 'nodia_hr_rank.png', { type: 'image/png' });
-                if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        title: '人事段位チェック',
-                        text: text,
-                        url: shareUrl,
-                        files: [file]
-                    });
-                    return;
-                }
+            // モバイルの場合はNative Share APIで画像付きシェアを試行
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: '人事段位チェック',
+                    text: text,
+                    url: shareUrl,
+                    files: [file]
+                });
+                return;
             }
 
-            // Fallback for Desktop: Download image and open intent
+            // デスクトップ等のFallback: 画像をダウンロードさせて各SNSを開く
             const link = document.createElement('a');
             link.download = 'nodia_hr_rank.png';
             link.href = dataUrl;
             link.click();
 
             setTimeout(() => {
-                const intentText = encodeURIComponent(`${text}\n※ダウンロードされた画像を添付してシェアしてください！`);
-                window.open(`https://twitter.com/intent/tweet?text=${intentText}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+                if (platform === 'x') {
+                    const intentText = encodeURIComponent(`${text}\n※ダウンロードされた画像を添付してシェアしてください！`);
+                    window.open(`https://twitter.com/intent/tweet?text=${intentText}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+                } else if (platform === 'fb') {
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                } else if (platform === 'in') {
+                    const linkedInUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('人事段位チェック')}&summary=${encodeURIComponent(text)}&source=${encodeURIComponent('NODIA')}`;
+                    window.open(linkedInUrl, '_blank');
+                }
             }, 500);
 
         } catch (error) {
-            console.error('Error generating image for share', error);
-            const fallbackText = encodeURIComponent(text);
-            window.open(`https://twitter.com/intent/tweet?text=${fallbackText}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+            console.error('Error sharing', error);
+            if (platform === 'x') {
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+            } else if (platform === 'fb') {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+            } else if (platform === 'in') {
+                window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}`, '_blank');
+            }
         }
     }
 
+    handleXShare() {
+        this.handleUniversalShare('x');
+    }
+
     handleFBShare() {
-        // 余計なクエリパラメータやハッシュを除去したURLを使用
-        const shareUrl = window.location.origin + window.location.pathname;
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+        this.handleUniversalShare('fb');
     }
 
     handleINShare() {
-        const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
-        const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
-        const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
-        const text = `私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}%`;
-        const shareUrl = window.location.origin + window.location.pathname;
-        
-        // 旧仕様のエンドポイントを使用してテキストのプレフィルを試行
-        const linkedInUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('人事段位チェック')}&summary=${encodeURIComponent(text)}&source=${encodeURIComponent('NODIA')}`;
-        window.open(linkedInUrl, '_blank');
+        this.handleUniversalShare('in');
     }
 
     handleCopyResult() {
