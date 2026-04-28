@@ -33,6 +33,7 @@ class Game {
         document.getElementById('lead-form').addEventListener('submit', (e) => this.handleFormSubmit(e));
         document.getElementById('share-btn-x').addEventListener('click', () => this.handleXShare());
         document.getElementById('share-btn-fb').addEventListener('click', () => this.handleFBShare());
+        document.getElementById('share-btn-in').addEventListener('click', () => this.handleINShare());
         document.getElementById('copy-btn').addEventListener('click', () => this.handleCopyResult());
         document.getElementById('retry-btn').addEventListener('click', () => this.handleRetry());
 
@@ -125,7 +126,42 @@ class Game {
             job: formData.get('job')
         };
 
+        // GASへ非同期送信
+        this.postToGoogleAppsScript();
+
         this.showResult();
+    }
+
+    async postToGoogleAppsScript() {
+        // ※デプロイしたGASの「ウェブアプリのURL」をここに貼り付けてください
+        const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+        
+        if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+            console.warn('Google Apps Script URL is not set. Skipping data submission.');
+            return;
+        }
+
+        const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
+        const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
+        const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
+
+        const params = new URLSearchParams();
+        params.append('company', this.userData.company);
+        params.append('name', this.userData.name);
+        params.append('email', this.userData.email);
+        params.append('job', this.userData.job);
+        params.append('score', totalCorrect);
+        params.append('percent', percent);
+        params.append('rank', rankInfo.rank);
+
+        try {
+            await fetch(GAS_URL, {
+                method: 'POST',
+                body: params
+            });
+        } catch (error) {
+            console.error('Error submitting data to GAS:', error);
+        }
     }
 
     showResult() {
@@ -146,14 +182,14 @@ class Game {
         const banner = document.getElementById('rank-banner');
         banner.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
         
-        const rankIcons = {
-            'L5': '👑',
-            'L4': '💎',
-            'L3': '🏅',
-            'L2': '⭐',
-            'L1': '🌱'
+        const rankImages = {
+            'L5': 'img/char_l5.png',
+            'L4': 'img/char_l4.png',
+            'L3': 'img/char_l3.png',
+            'L2': 'img/char_l2.png',
+            'L1': 'img/char_l1.png'
         };
-        document.getElementById('rank-icon').textContent = rankIcons[rankInfo.rank] || '🏅';
+        document.getElementById('rank-icon').src = rankImages[rankInfo.rank] || 'img/char_l3.png';
         
         document.getElementById('user-name-display').textContent = this.userData.name;
         document.getElementById('rank-title').textContent = `${rankInfo.title}（${rankInfo.rank}）`;
@@ -310,6 +346,11 @@ class Game {
         } else {
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
         }
+    }
+
+    handleINShare() {
+        const url = window.location.href;
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
     }
 
     handleCopyResult() {
