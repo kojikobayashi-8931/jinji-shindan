@@ -186,13 +186,13 @@ class Game {
         banner.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
         
         const rankImages = {
-            'L5': 'img2/lv5_grandmaster.svg',
-            'L4': 'img2/lv4_master.svg',
-            'L3': 'img2/lv3_path.svg',
-            'L2': 'img2/lv2_step.svg',
-            'L1': 'img2/lv1_egg.svg'
+            'L5': 'lv5_grandmaster.svg',
+            'L4': 'lv4_master.svg',
+            'L3': 'lv3_path.svg',
+            'L2': 'lv2_step.svg',
+            'L1': 'lv1_egg.svg'
         };
-        document.getElementById('rank-icon').src = rankImages[rankInfo.rank] || 'img2/lv3_path.svg';
+        document.getElementById('rank-icon').src = rankImages[rankInfo.rank] || 'lv3_path.svg';
         
         document.getElementById('user-name-display').textContent = this.userData.name;
         document.getElementById('rank-title').textContent = `${rankInfo.title}（${rankInfo.rank}）`;
