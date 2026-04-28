@@ -298,101 +298,20 @@ class Game {
         });
     }
 
-    async generateShareImage() {
-        const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
-        const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
-        const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
-
-        const shareDiv = document.createElement('div');
-        shareDiv.style.position = 'absolute';
-        shareDiv.style.left = '-9999px';
-        // OGP標準サイズ(1200x630)に設定し、SNSでのクロップを防ぐための余白を設ける
-        shareDiv.style.width = '1200px';
-        shareDiv.style.height = '630px';
-        
-        const rankColors = {
-            'L5': '#818cf8',
-            'L4': '#60a5fa',
-            'L3': '#34d399',
-            'L2': '#fbbf24',
-            'L1': '#9ca3af'
-        };
-        shareDiv.style.backgroundColor = rankColors[rankInfo.rank] || '#0F172A';
-        shareDiv.style.color = '#fff';
-        shareDiv.style.display = 'flex';
-        shareDiv.style.alignItems = 'center';
-        shareDiv.style.justifyContent = 'center';
-        shareDiv.style.fontFamily = "'Inter', 'Noto Sans JP', sans-serif";
-        // 余白を広めにとる
-        shareDiv.style.padding = '80px';
-        shareDiv.style.boxSizing = 'border-box';
-        
-        const rankImages = {
-            'L5': 'img2/lv5_grandmaster.svg',
-            'L4': 'img2/lv4_master.svg',
-            'L3': 'img2/lv3_path.svg',
-            'L2': 'img2/lv2_step.svg',
-            'L1': 'img2/lv1_egg.svg'
-        };
-        const imgSrc = rankImages[rankInfo.rank] || 'img2/lv3_path.svg';
-
-        shareDiv.innerHTML = `
-            <div style="flex: 1; text-align: center; border-right: 4px solid rgba(255,255,255,0.3); padding-right: 40px;">
-                <img src="${imgSrc}" style="width: 250px; height: 250px; object-fit: contain; margin-bottom: 20px;">
-                <div style="font-size: 50px; font-weight: bold;">${rankInfo.title} (${rankInfo.rank})</div>
-            </div>
-            <div style="flex: 1; text-align: center; padding-left: 40px;">
-                <div style="font-size: 40px; margin-bottom: 20px; opacity: 0.9;">正答率</div>
-                <div style="font-size: 160px; font-weight: 900; line-height: 1;">${percent}<span style="font-size: 80px;">%</span></div>
-            </div>
-        `;
-        document.body.appendChild(shareDiv);
-
-        // scale: 1で正確に1200x630を出力
-        const canvas = await html2canvas(shareDiv, { scale: 1, backgroundColor: null });
-        document.body.removeChild(shareDiv);
-        const dataUrl = canvas.toDataURL('image/png');
-
-        return { dataUrl };
-    }
-
-    async handleUniversalShare(platform) {
+    handleUniversalShare(platform) {
         const totalCorrect = Object.values(this.categoryScores).reduce((acc, curr) => acc + curr.correct, 0);
         const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
         const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
         const text = `私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック`;
         const shareUrl = "https://kojikobayashi-8931.github.io/jinji-shindan/";
 
-        try {
-            const { dataUrl } = await this.generateShareImage();
-
-            // 画像をダウンロードさせて各SNSのダイレクトアプリ/ウィンドウを開く
-            const link = document.createElement('a');
-            link.download = 'nodia_hr_rank.png';
-            link.href = dataUrl;
-            link.click();
-
-            setTimeout(() => {
-                if (platform === 'x') {
-                    const intentText = encodeURIComponent(`${text}\n※ダウンロードされた画像を添付してシェアしてください！`);
-                    window.open(`https://twitter.com/intent/tweet?text=${intentText}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-                } else if (platform === 'fb') {
-                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-                } else if (platform === 'in') {
-                    const linkedInUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('人事段位チェック')}&summary=${encodeURIComponent(text)}&source=${encodeURIComponent('NODIA')}`;
-                    window.open(linkedInUrl, '_blank');
-                }
-            }, 500);
-
-        } catch (error) {
-            console.error('Error sharing', error);
-            if (platform === 'x') {
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-            } else if (platform === 'fb') {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-            } else if (platform === 'in') {
-                window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}`, '_blank');
-            }
+        if (platform === 'x') {
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        } else if (platform === 'fb') {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+        } else if (platform === 'in') {
+            const linkedInUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('人事段位チェック')}&summary=${encodeURIComponent(text)}&source=${encodeURIComponent('NODIA')}`;
+            window.open(linkedInUrl, '_blank');
         }
     }
 
