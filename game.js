@@ -85,7 +85,19 @@ class Game {
                 <div class="choice-indicator">${label}</div>
                 <div class="choice-text">${question.choices[label]}</div>
             `;
-            btn.addEventListener('click', () => this.handleAnswer(label, question, category));
+            btn.addEventListener('click', () => {
+                // すでに選択済みの場合は無視（連続タップ防止）
+                if (btn.classList.contains('selected')) return;
+                
+                // 押された選択肢にハイライトをつける
+                document.querySelectorAll('.choice-option').forEach(el => el.classList.remove('selected'));
+                btn.classList.add('selected');
+                
+                // 短い遅延（300ms）を入れてハイライトを見せてから次の問題へ
+                setTimeout(() => {
+                    this.handleAnswer(label, question, category);
+                }, 300);
+            });
             choicesContainer.appendChild(btn);
         });
     }

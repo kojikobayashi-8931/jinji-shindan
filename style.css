@@ -321,6 +321,17 @@ h1.hero-title .accent-text {
     transform: translateX(2px);
 }
 
+.choice-option.selected {
+    border-color: var(--accent-color);
+    background: #eef2ff;
+    transform: scale(0.98);
+}
+
+.choice-option.selected .choice-indicator {
+    background: var(--accent-color);
+    color: white;
+}
+
 .choice-indicator {
     width: 40px;
     height: 40px;
