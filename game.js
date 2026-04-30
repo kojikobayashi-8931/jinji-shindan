@@ -315,7 +315,7 @@ class Game {
         const percent = Math.round((totalCorrect / this.totalQuestions) * 100);
         const rankInfo = rankCriteria.find(r => percent >= r.minScore) || rankCriteria[rankCriteria.length - 1];
         const text = `私の人事段位は【${rankInfo.title}・${rankInfo.rank}】でした！正答率${percent}% #人事段位チェック`;
-        const shareUrl = "https://kojikobayashi-8931.github.io/jinji-shindan/";
+        const shareUrl = "https://jinji-shindan.nodia.co.jp/";
 
         if (platform === 'x') {
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
