@@ -303,10 +303,22 @@ h1.hero-title .accent-text {
     font-weight: 600;
 }
 
-.choice-option:hover {
+@media (hover: hover) {
+    .choice-option:hover {
+        border-color: var(--accent-color);
+        background: #fcfdfe;
+        transform: translateX(5px);
+    }
+    .choice-option:hover .choice-indicator {
+        background: var(--accent-color);
+        color: white;
+    }
+}
+
+.choice-option:active {
     border-color: var(--accent-color);
     background: #fcfdfe;
-    transform: translateX(5px);
+    transform: translateX(2px);
 }
 
 .choice-indicator {
@@ -322,7 +334,7 @@ h1.hero-title .accent-text {
     font-weight: 800;
 }
 
-.choice-option:hover .choice-indicator {
+.choice-option:active .choice-indicator {
     background: var(--accent-color);
     color: white;
 }
