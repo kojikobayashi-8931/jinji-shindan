@@ -136,7 +136,7 @@ class Game {
         // ※デプロイしたGASの「ウェブアプリのURL」をここに貼り付けてください
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbxOZrDu8s0dq0tswtHaqexmuedLh5ZQT3d0iX_qcoTsrrHPunL2iOT6_wIgUpCKyek_og/exec';
         
-        if (GAS_URL === 'https://script.google.com/macros/s/AKfycbxOZrDu8s0dq0tswtHaqexmuedLh5ZQT3d0iX_qcoTsrrHPunL2iOT6_wIgUpCKyek_og/exec') {
+        if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL' || !GAS_URL) {
             console.warn('Google Apps Script URL is not set. Skipping data submission.');
             alert('【開発者向け】GASのURLが設定されていません。game.jsの137行目を変更してください。');
             return;
