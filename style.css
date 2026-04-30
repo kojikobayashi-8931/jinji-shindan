@@ -335,6 +335,7 @@ h1.hero-title .accent-text {
 .choice-indicator {
     width: 40px;
     height: 40px;
+    flex-shrink: 0;
     background: #f0f2f5;
     color: var(--main-color);
     display: flex;
