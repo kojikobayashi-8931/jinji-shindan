@@ -1,9 +1,7 @@
 import React from 'react';
 import { ImageResponse } from '@vercel/og';
 
-export const config = {
-  runtime: 'edge',
-};
+
 
 // 必要な文字だけを含むサブセットフォントをGoogle FontsからTTF形式で取得する関数
 async function loadGoogleFont(family, text) {
@@ -31,12 +29,11 @@ const levelsData = {
     5: { name: '人事の達人', img: 'lv5_grandmaster.svg', mainColor: '#E86A2A', bgColor: '#FFF8F5' }
 };
 
-export default async function handler(request) {
+export default async function handler(req, res) {
   try {
-    const { searchParams } = new URL(request.url);
-    const levelStr = searchParams.get('level') || '3';
-    const scoreStr = searchParams.get('score') || '0';
-    const username = searchParams.get('username') || 'あなた';
+    const levelStr = req.query.level || '3';
+    const scoreStr = req.query.score || '0';
+    const username = req.query.username || 'あなた';
 
     const level = parseInt(levelStr, 10);
     const data = levelsData[level] || levelsData[3];
@@ -52,7 +49,7 @@ export default async function handler(request) {
     // フォントデータを取得（太字）
     const fontData = await loadGoogleFont('Noto Sans JP:wght@700', requiredChars);
 
-    return new ImageResponse(
+    const imageResp = new ImageResponse(
       (
         <div
           style={{
@@ -233,10 +230,15 @@ export default async function handler(request) {
           : undefined,
       }
     );
+
+    const arrayBuffer = await imageResp.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.status(200).send(buffer);
   } catch (e) {
-    console.log(e.message);
-    return new Response(`Failed to generate the image`, {
-      status: 500,
-    });
+    console.error(e);
+    res.status(500).send(`Failed to generate the image: ${e.message}`);
   }
 }
