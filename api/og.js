@@ -29,11 +29,16 @@ const levelsData = {
     5: { name: '人事の達人', img: 'lv5_grandmaster.svg', mainColor: '#E86A2A', bgColor: '#FFF8F5' }
 };
 
-export default async function handler(req, res) {
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(request) {
   try {
-    const levelStr = req.query.level || '3';
-    const scoreStr = req.query.score || '0';
-    const username = req.query.username || 'あなた';
+    const { searchParams } = new URL(request.url);
+    const levelStr = searchParams.get('level') || '3';
+    const scoreStr = searchParams.get('score') || '0';
+    const username = searchParams.get('username') || 'あなた';
 
     const level = parseInt(levelStr, 10);
     const data = levelsData[level] || levelsData[3];
@@ -231,14 +236,9 @@ export default async function handler(req, res) {
       }
     );
 
-    const arrayBuffer = await imageResp.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.status(200).send(buffer);
+    return imageResp;
   } catch (e) {
     console.error(e);
-    res.status(500).send(`Failed to generate the image: ${e.message}`);
+    return new Response(`Failed to generate the image: ${e.message}`, { status: 500 });
   }
 }
