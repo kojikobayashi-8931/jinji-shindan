@@ -21,7 +21,7 @@ export default async function handler(request) {
     <!-- OGP Settings -->
     <meta property="og:title" content="人事段位チェック | 判定結果" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="${baseUrl}/" />
+    <meta property="og:url" content="${baseUrl}/result?level=${level}&score=${score}&username=${encodeURIComponent(username)}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:description" content="人事の知識、どれくらい？正解率であなたの段位を手軽に判定" />
     
