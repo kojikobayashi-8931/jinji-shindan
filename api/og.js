@@ -153,7 +153,7 @@ export default async function handler(request) {
     const data = levelsData[level] || levelsData[3];
     
     // 描画に必要な文字群
-    const requiredChars = \`L0123456789%人事の卵歩道匠達人結果正解率段位チクェッbyNODIA \${username}さんの結果は...\`;
+    const requiredChars = `L0123456789%人事の卵歩道匠達人結果正解率段位チクェッbyNODIA ${username}さんの結果は...`;
     
     // フォントデータを取得（太字）
     const fontData = await loadGoogleFont('Noto Sans JP:wght@700', requiredChars);
@@ -182,7 +182,7 @@ export default async function handler(request) {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: 'white',
-          border: \`8px solid \${data.mainColor}\`,
+          border: `8px solid ${data.mainColor}`,
           marginRight: '60px',
           boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
         }
@@ -201,7 +201,7 @@ export default async function handler(request) {
             color: '#555',
             marginBottom: 20,
           }
-        }, \`\${username}さんの結果は...\`),
+        }, `${username}さんの結果は...`),
         h('div', {
           style: {
             display: 'flex',
@@ -215,7 +215,7 @@ export default async function handler(request) {
               color: data.mainColor,
               marginRight: 16,
             }
-          }, \`L\${level}\`),
+          }, `L${level}`),
           h('div', {
             style: {
               fontSize: 72,
@@ -255,6 +255,6 @@ export default async function handler(request) {
     return imageResp;
   } catch (e) {
     console.error(e);
-    return new Response(\`Failed to generate the image: \${e.message}\`, { status: 500 });
+    return new Response(`Failed to generate the image: ${e.message}`, { status: 500 });
   }
 }
