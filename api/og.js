@@ -148,94 +148,138 @@ export default async function handler(request) {
     const { searchParams } = new URL(request.url);
     const levelStr = searchParams.get('level') || '3';
     const username = searchParams.get('username') || 'あなた';
+    const isDefault = searchParams.get('default') === 'true';
+
+    const baseUrl = 'https://jinji-shindan.nodia.co.jp';
+    const logoUrl = `${baseUrl}/logo.png`;
 
     const level = parseInt(levelStr, 10);
     const data = levelsData[level] || levelsData[3];
     
     // 描画に必要な文字群
-    const requiredChars = `L0123456789%人事の卵歩道匠達人結果正解率段位チクェッbyNODIA ${username}さんの結果は...`;
+    const requiredChars = isDefault
+      ? `HRプロフェッショナル知識レベル診断人事段位チクェッbyNODIA`
+      : `L0123456789%人事の卵歩道匠達人結果正解率段位チクェッbyNODIA ${username}さんの結果は...`;
     
     // フォントデータを取得（太字）
     const fontData = await loadGoogleFont('Noto Sans JP:wght@700', requiredChars);
 
-    const layout = h('div', {
-      style: {
-        backgroundColor: data.bgColor,
-        width: '1200px',
-        height: '630px',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        fontFamily: '"Noto Sans JP"',
-        padding: '0 60px',
-      }
-    },
-      h('div', {
+    let layout;
+
+    if (isDefault) {
+      layout = h('div', {
         style: {
-          width: '320px',
-          height: '320px',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'white',
-          border: `8px solid ${data.mainColor}`,
-          marginRight: '60px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
-        }
-      }, getIcon(level)),
-      h('div', {
-        style: {
+          backgroundColor: '#F8FAFC',
+          width: '1200px',
+          height: '630px',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
           justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          fontFamily: '"Noto Sans JP"',
+          padding: '0 60px',
+        }
+      },
+        h('img', {
+          src: logoUrl,
+          style: {
+            height: '140px',
+            marginBottom: '50px',
+            objectFit: 'contain',
+          }
+        }),
+        h('div', {
+          style: {
+            fontSize: 64,
+            fontWeight: 900,
+            color: '#334155',
+            textAlign: 'center',
+            letterSpacing: '-0.02em',
+          }
+        }, 'HRプロフェッショナル知識レベル診断')
+      );
+    } else {
+      layout = h('div', {
+        style: {
+          backgroundColor: data.bgColor,
+          width: '1200px',
+          height: '630px',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          fontFamily: '"Noto Sans JP"',
+          padding: '0 60px',
         }
       },
         h('div', {
           style: {
-            fontSize: 36,
-            fontWeight: 700,
-            color: '#555',
-            marginBottom: 20,
+            width: '320px',
+            height: '320px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'white',
+            border: `8px solid ${data.mainColor}`,
+            marginRight: '60px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
           }
-        }, `${username}さんの結果は...`),
+        }, getIcon(level)),
         h('div', {
           style: {
             display: 'flex',
-            alignItems: 'baseline',
+            flexDirection: 'column',
+            justifyContent: 'center',
           }
         },
           h('div', {
             style: {
-              fontSize: 64,
-              fontWeight: 900,
-              color: data.mainColor,
-              marginRight: 16,
+              fontSize: 36,
+              fontWeight: 700,
+              color: '#555',
+              marginBottom: 20,
             }
-          }, `L${level}`),
+          }, `${username}さんの結果は...`),
           h('div', {
             style: {
-              fontSize: 72,
-              fontWeight: 900,
-              color: data.mainColor,
+              display: 'flex',
+              alignItems: 'baseline',
             }
-          }, data.name)
-        )
-      ),
-      h('div', {
-        style: {
-          position: 'absolute',
-          bottom: 40,
-          right: 60,
-          fontSize: 20,
-          fontWeight: 700,
-          color: '#888',
-        }
-      }, '人事段位チェック by NODIA')
-    );
+          },
+            h('div', {
+              style: {
+                fontSize: 64,
+                fontWeight: 900,
+                color: data.mainColor,
+                marginRight: 16,
+              }
+            }, `L${level}`),
+            h('div', {
+              style: {
+                fontSize: 72,
+                fontWeight: 900,
+                color: data.mainColor,
+              }
+            }, data.name)
+          )
+        ),
+        h('div', {
+          style: {
+            position: 'absolute',
+            bottom: 40,
+            right: 60,
+            fontSize: 20,
+            fontWeight: 700,
+            color: '#888',
+          }
+        }, '人事段位チェック by NODIA')
+      );
+    }
 
     const imageResp = new ImageResponse(layout, {
       width: 1200,
