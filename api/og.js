@@ -169,7 +169,7 @@ export default async function handler(request) {
     if (isDefault) {
       layout = h('div', {
         style: {
-          backgroundColor: '#F8FAFC',
+          backgroundColor: 'white',
           width: '1200px',
           height: '630px',
           display: 'flex',

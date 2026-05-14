@@ -35,7 +35,6 @@ export default async function handler(request) {
     <script>
         window.location.replace("${baseUrl}/");
     </script>
-    <meta http-equiv="refresh" content="0;url=${baseUrl}/">
 </head>
 <body style="background-color: #f8fafc; font-family: sans-serif; text-align: center; padding-top: 20vh;">
     <p>トップページへ移動しています...</p>
