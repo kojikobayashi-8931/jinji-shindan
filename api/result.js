@@ -17,6 +17,7 @@ export default async function handler(request) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>人事段位チェック | 判定結果</title>
+    <link rel="icon" href="https://nodia.co.jp/assets/favicon.ico">
     
     <!-- OGP Settings -->
     <meta property="og:title" content="人事段位チェック | 判定結果" />
