@@ -158,7 +158,7 @@ export default async function handler(request) {
     
     // 描画に必要な文字群
     const requiredChars = isDefault
-      ? `HRプロフェッショナル知識レベル診断人事段位チクェッbyNODIA`
+      ? `人事段位テストチクェッbyNODIA `
       : `L0123456789%人事の卵歩道匠達人結果正解率段位チクェッbyNODIA ${username}さんの結果は...`;
     
     // フォントデータを取得（太字）
@@ -198,7 +198,7 @@ export default async function handler(request) {
             textAlign: 'center',
             letterSpacing: '-0.02em',
           }
-        }, 'HRプロフェッショナル知識レベル診断')
+        }, '人事段位テスト')
       );
     } else {
       layout = h('div', {
