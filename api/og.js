@@ -162,7 +162,7 @@ export default async function handler(request) {
       : `L0123456789%人事の卵歩道匠達人結果正解率段位チクェッbyNODIA ${username}さんの結果は...`;
     
     // フォントデータを取得（太字）
-    const fontData = await loadGoogleFont('Noto Sans JP:wght@700', requiredChars);
+    const fontData = await loadGoogleFont('Noto Sans JP:wght@900', requiredChars);
 
     let layout;
 
@@ -289,7 +289,7 @@ export default async function handler(request) {
             {
               name: 'Noto Sans JP',
               data: fontData,
-              weight: 700,
+              weight: 900,
               style: 'normal',
             },
           ]
